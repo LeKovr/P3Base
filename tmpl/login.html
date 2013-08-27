@@ -1,0 +1,75 @@
+[% 
+  meta.title = 'Авторизация';
+  meta.top.${meta.top.size} = BLOCK 
+%]
+<link rel="stylesheet" href="/css/own/login.css" />
+[% 
+  END;
+  INCLUDE inc/top.tt2 ;
+  header = meta.auth ? 'Для доступа к странице необходима авторизация' : 'Авторизация пользователя';
+%]
+
+    <h2 class="form-signin-heading">[% header %]</h2>
+    <form class="form-signin">
+      <div class="form-group">
+        <label class="control-label" for="form1-user">Логин</label>
+        <input name="user" type="text" class="form-control" id="form1-user" placeholder="Логин" autofocus>
+        <div class="form-field-error" id="form1-err-user"> </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="form1-psw">Пароль</label>
+        <input name="psw" type="password" class="form-control" id="form1-psw" placeholder="Пароль" autofocus>
+        <div class="form-field-error" id="form1-err-psw"> </div>
+      </div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
+      <div class="app-status"></div>
+    </form>
+    <div class="col-md-offset-3 col-md-6 well">
+      <p><a href="/register.html">Регистрация</a></p>
+    </div>
+[%  meta.btm.${meta.btm.size} = BLOCK %]
+<script type="text/javascript" src="/js/jquery.jsonrpc.js"></script> 
+<script type="text/javascript" src="/js/own/rpc-form.js"></script> 
+<script>
+//<![CDATA[
+
+$(document).ready(function(){
+    $.jsonRPC.setup({
+      endPoint: '[% cfg.rpc_uri %]',
+      namespace: ''
+    });
+    $.rpcForm.init({
+      statusDiv:  $('div.app-status'),
+      errorPrefix: "form1-err-"
+    });
+    var uri = [% meta.auth ? 'null' : '"' _ cfg.login_uri _ '"' %];
+    $('.form-signin').on('submit', function(event) { 
+      $('div.app-status').html('Отправка запроса...');
+      $('div.form-field-error').html(' ');
+      return $.rpcForm.on('login', event, function(result) { 
+        $('div.app-status').html('OK');
+        if (uri) {
+          location.href = uri;
+        } else {
+          location.reload();
+        }        
+      }, function(error){
+        if (error.code == 2001) {
+          $('#form1-err-psw')
+            .html('Неверный пароль')
+            .parent().addClass('has-error');
+        } else if (error.code == 2001) {
+          $('#form1-err-psw')
+            .html('Неверный пароль')
+            .parent().addClass('has-error');
+        } 
+      }) 
+    });
+});
+
+//]]>
+</script>
+[% 
+  END;
+  INCLUDE inc/btm.tt2 
+%]

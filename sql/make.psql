@@ -1,0 +1,14 @@
+
+\i config.sql
+
+\i once.sql
+
+\c :DB
+
+BEGIN;
+
+\i init.sql
+\i func.sql
+\i perm.sql
+
+COMMIT;

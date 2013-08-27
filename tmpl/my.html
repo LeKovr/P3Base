@@ -1,0 +1,24 @@
+[% 
+  meta.title = 'Кабинет';
+  INCLUDE inc/top.tt2;
+  s = session.get('profile');
+%]
+<div class="col-md-6">
+   <table class="table table-condensed">
+        <tbody>
+          <tr>
+            <td>Логин</td>
+            <td>[% s.login | html %]</td>
+          </tr>
+          <tr>
+            <td>Аккаунт создан</td>
+            <td>[% s.created_at %]</td>
+          </tr>
+          <tr>
+            <td>Предыдущая авторизация</td>
+            <td>[% s.login_at %]</td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+[% INCLUDE inc/btm.tt2 %]

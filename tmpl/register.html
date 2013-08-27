@@ -1,0 +1,86 @@
+[% 
+  meta.title = 'Регистрация';
+  meta.top.${meta.top.size} = BLOCK 
+%]
+<link rel="stylesheet" href="/css/own/login.css" />
+[% 
+  END;
+  INCLUDE inc/top.tt2 
+%]
+
+  <h2 class="form-signin-heading">Регистрация нового пользователя</h2>
+  <div class="step1">
+    <form class="form-signin">
+      <div class="form-group">
+        <label class="control-label" for="form1-name">Имя</label>
+        <input name="name" type="text" class="form-control" id="form1-name" placeholder="Имя для отображения" autofocus>
+        <div class="form-field-error" id="form1-err-name"> </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="form1-user">Логин</label>
+        <input name="user" type="text" class="form-control" id="form1-user" placeholder="Логин для авторизации" autofocus>
+        <div class="form-field-error" id="form1-err-user"> </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="form1-psw">Пароль</label>
+        <input name="psw" type="password" class="form-control" id="form1-psw" placeholder="Пароль" autofocus>
+        <div class="form-field-error" id="form1-err-psw"> </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="form1-psw1">Пароль еще раз</label>
+        <input name="psw1" type="password" class="form-control" id="form1-psw1" placeholder="Повторите пароль" autofocus>
+        <div class="form-field-error" id="form1-err-psw1"> </div>
+      </div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Зарегистрировать</button>
+      <div class="app-status"></div>
+    </form>
+  </div>
+  <div class="step2 well" style="display: none">
+    <p>Поздравляем c регистрацией!<br> Теперь пора <a href="/login.html">авторизоваться</a></p>
+  </div>
+[% USE dumper(indent=1, pad="  "); '<!-- ' _ dumper.dump(cfg) _ ' -->'; %]
+
+[%  meta.btm.${meta.btm.size} = BLOCK %]
+<script type="text/javascript" src="/js/jquery.jsonrpc.js"></script> 
+<script type="text/javascript" src="/js/own/rpc-form.js"></script> 
+<script>
+//<![CDATA[
+
+$(document).ready(function(){
+    $.jsonRPC.setup({
+      endPoint: '[% cfg.rpc_uri %]',
+      namespace: ''
+    });
+    $.rpcForm.init({ 
+      statusDiv:  $('div.app-status'),
+      errorPrefix: "form1-err-"
+    });
+    $('.form-signin').on('submit', function(event) { 
+      $('div.app-status').html('Отправка запроса...');
+      $('div.form-field-error').html(' ');
+      return $.rpcForm.on('register', event, function(result) { 
+        $('div.app-status').html('OK');
+        if (result) {
+          [% IF cfg.login_on_register %]
+          location.href = '[% cfg.login_uri %]';
+          [% ELSE %]
+          $('div .step1').hide(500);
+          $('div .step2').show(500);
+          [% END %]
+        }
+      }, function(error){
+        if (error.code == 2002) {
+          $('#form1-err-user')
+            .html('Такой логин уже есть')
+            .parent().addClass('has-error');
+        }
+      });
+    });
+});
+
+//]]>
+</script>
+[% 
+  END;
+  INCLUDE inc/btm.tt2 
+%]
