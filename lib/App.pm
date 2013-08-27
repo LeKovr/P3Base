@@ -106,8 +106,8 @@ sub account_purge {
   my $req = shift;
   my $interval = shift;
   my $dbh = &{$self->get_dbh};
-  my $rv = $dbh->selectall_arrayref('select * from app.account_purge(?)', undef,
-    $interval,
+  # my $rv = $dbh->selectall_arrayref('select * from app.account_purge(?)', undef, $interval,
+  my $rv = $dbh->selectall_arrayref('select * from app.account_purge()', undef,
   ) or die $self->_db_error($dbh->errstr);
   if (ref $rv eq 'ARRAY' and $rv->[0]) {
     return $rv->[0];
